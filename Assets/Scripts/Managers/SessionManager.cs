@@ -1,3 +1,4 @@
+using System.Collections;
 using Fusion;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,7 +15,15 @@ public class SessionManager : NetworkBehaviour
 
     public override void Spawned()
     {
-        StartSession();
+        if(!Object.HasStateAuthority)
+            return;
+
+        StartCoroutine(Delay());
+        IEnumerator Delay()
+        {
+            yield return null;
+            StartSession();
+        }
     }
 
     private void StartSession()
@@ -37,6 +46,8 @@ public class SessionManager : NetworkBehaviour
     void OnGUI()
     {
         if(!Runner)
+            return;
+        if(!SessionTimer.IsRunning)
             return;
         
         int remainingTime = (int)SessionTimer.RemainingTime(Runner);

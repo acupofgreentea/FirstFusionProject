@@ -12,6 +12,10 @@ public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
 
     private Player player;
     
+    private bool isShooting = false;
+
+    PlayerNetworkInput playerNetworkInput = new();
+    
     public PlayerInputHandler Init(Player player)
     {
         inputActions = new PlayerInput();
@@ -22,19 +26,26 @@ public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
     public override void Spawned()
     {
         Runner.AddCallbacks(this);
-        EnableInput();
 
         inputActions.PlayerActions.Shoot.performed += HandleShoot;
+        player.PlayerHealth.OnPlayerDie += DisableInput;
+        player.PlayerHealth.OnPlayerRespawn += EnableInput;
+
+        EnableInput();
+    }
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        inputActions.PlayerActions.Shoot.performed -= HandleShoot;
+        player.PlayerHealth.OnPlayerDie -= DisableInput;
+        player.PlayerHealth.OnPlayerRespawn -= EnableInput;
     }
 
     private void HandleShoot(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
         isShooting = true;
     }
-    private bool isShooting = false;
-    public event UnityAction OnShootPerformed;
 
-    PlayerNetworkInput playerNetworkInput = new();
     public void EnableInput()
     {
         inputActions.Enable();
@@ -113,6 +124,7 @@ public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
     public void OnSceneLoadStart(NetworkRunner runner)
     {
     }
+    
 }
 
 public struct PlayerNetworkInput : INetworkInput
