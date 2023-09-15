@@ -244,7 +244,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6593025907306958440}
   m_Layer: 0
-  m_Name: IntTarger
+  m_Name: IntTarget
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

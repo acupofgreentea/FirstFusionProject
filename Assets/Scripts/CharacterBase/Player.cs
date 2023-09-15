@@ -6,6 +6,7 @@ public class Player : CharacterBase
     public PlayerInputHandler PlayerInputHandler {get; private set;}
     public PlayerShootController PlayerShootController {get; private set;}
     public PlayerHealth PlayerHealth {get; private set;}
+    public PlayerNetworkedData PlayerNetworkedData {get; private set;}
 
     [SerializeField] private GameObject rendererRoot;
     protected override void Awake() 
@@ -38,5 +39,6 @@ public class Player : CharacterBase
         PlayerInputHandler = GetComponent<PlayerInputHandler>().Init(this);
         PlayerShootController = GetComponent<PlayerShootController>().Init(this);
         PlayerHealth = GetComponent<PlayerHealth>().Init(this);
+        PlayerNetworkedData = GetComponent<PlayerNetworkedData>().Init(this);
     }
 }

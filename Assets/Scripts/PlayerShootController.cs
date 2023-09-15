@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerShootController : NetworkBehaviour
 {
-    [SerializeField] public Bullet bulletPrefab;
+    [SerializeField] public NetworkPrefabRef bulletPrefab = NetworkPrefabRef.Empty;
 
     [SerializeField] private Transform spawnPos;
     private Player player;
@@ -45,7 +45,7 @@ public class PlayerShootController : NetworkBehaviour
 
     private void HandleShootPerformed()
     {
-        Runner.Spawn(bulletPrefab, spawnPos.position, Quaternion.LookRotation(transform.forward));
+        Runner.Spawn(bulletPrefab, spawnPos.position, Quaternion.LookRotation(transform.forward), Object.InputAuthority);
     }   
     
     public override void Despawned(NetworkRunner runner, bool hasState)

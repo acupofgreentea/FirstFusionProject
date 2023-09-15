@@ -10,12 +10,23 @@ public class Bullet : NetworkBehaviour
 
     [SerializeField] private int damage = 3;
 
+    [Networked] public Player Owner {get; set;}
+
     public override void Spawned()
     {
+        if(Runner.TryGetPlayerObject(Object.InputAuthority, out var player))
+        {
+            Owner = player.GetComponent<Player>();
+        }
         if (Object.HasStateAuthority == false) 
             return;
 
         currentLifetime = TickTimer.CreateFromSeconds(Runner, maxLifetime);
+    }
+
+    public void SetOwner(Player player)
+    {
+        Owner = player;
     }
 
     public override void FixedUpdateNetwork()
@@ -51,9 +62,18 @@ public class Bullet : NetworkBehaviour
 
         if(hit.GameObject.TryGetComponent(out IDamagable damagable))
         {
+            if(CheckIfEnemyWillDie(damagable))
+                Owner.PlayerNetworkedData.AddToKillCount();
+
             damagable.TakeDamage(damage);
         }
 
         return true;
+    }
+
+    private bool CheckIfEnemyWillDie(IDamagable damagable)
+    {
+        int health = damagable.CurrentHealth;
+        return health - damage <= 0;
     }
 }

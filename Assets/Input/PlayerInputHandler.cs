@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
 {
