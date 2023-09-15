@@ -15,9 +15,9 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Punch",
+                    "name": "Shoot",
                     "type": "Button",
-                    "id": "3084079b-a5e9-4d27-9bc0-fb6d7611ec6d",
+                    "id": "d9b5d200-7974-45df-af10-2b6585b059b8",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -104,12 +104,12 @@
                 },
                 {
                     "name": "",
-                    "id": "9390ae1c-a372-4935-b4b3-66c593b66890",
-                    "path": "<Mouse>/leftButton",
+                    "id": "df37a490-691b-471c-8b1d-e002342e92f9",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Punch",
+                    "action": "Shoot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

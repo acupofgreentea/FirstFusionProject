@@ -10,26 +10,21 @@ public class PlayerAnimationController : CharacterAnimationControllerBase
             {AnimationKeys.Move, AnimationHashKeys.MoveHashKey},
         };
     }
-    public override void Spawned() 
+    public override void FixedUpdateNetwork()
     {
-        CharacterBase.CharacterMovement.OnMovementUpdate += HandleOnMovementUpdate;
+        HandleOnMovementUpdate(CharacterBase.CharacterMovement.MovementInput);
     }
 
     private float moveLerpSpeed = 15f;
     private float currentMoveParamValue;
-    private void HandleOnMovementUpdate(Vector2 moveInput)
+    private void HandleOnMovementUpdate(Vector3 moveInput)
     {
-        float sqrMagnitude = moveInput.sqrMagnitude;
+        float sqrMagnitude = moveInput.ToVector2().sqrMagnitude;
 
         currentMoveParamValue = Mathf.Lerp(currentMoveParamValue, sqrMagnitude, moveLerpSpeed * Runner.DeltaTime);
 
         currentMoveParamValue = Mathf.Clamp01(currentMoveParamValue);
         
         SetFloat(AnimationKeys.Move, currentMoveParamValue);
-    }
-
-    private void OnDestroy() 
-    {
-        CharacterBase.CharacterMovement.OnMovementUpdate -= HandleOnMovementUpdate;
     }
 }

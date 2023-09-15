@@ -37,9 +37,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Punch"",
+                    ""name"": ""Shoot"",
                     ""type"": ""Button"",
-                    ""id"": ""3084079b-a5e9-4d27-9bc0-fb6d7611ec6d"",
+                    ""id"": ""d9b5d200-7974-45df-af10-2b6585b059b8"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -126,12 +126,12 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""9390ae1c-a372-4935-b4b3-66c593b66890"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""id"": ""df37a490-691b-471c-8b1d-e002342e92f9"",
+                    ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Punch"",
+                    ""action"": ""Shoot"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -143,7 +143,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         // PlayerActions
         m_PlayerActions = asset.FindActionMap("PlayerActions", throwIfNotFound: true);
         m_PlayerActions_Movement = m_PlayerActions.FindAction("Movement", throwIfNotFound: true);
-        m_PlayerActions_Punch = m_PlayerActions.FindAction("Punch", throwIfNotFound: true);
+        m_PlayerActions_Shoot = m_PlayerActions.FindAction("Shoot", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -206,13 +206,13 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_PlayerActions;
     private List<IPlayerActionsActions> m_PlayerActionsActionsCallbackInterfaces = new List<IPlayerActionsActions>();
     private readonly InputAction m_PlayerActions_Movement;
-    private readonly InputAction m_PlayerActions_Punch;
+    private readonly InputAction m_PlayerActions_Shoot;
     public struct PlayerActionsActions
     {
         private @PlayerInput m_Wrapper;
         public PlayerActionsActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @Movement => m_Wrapper.m_PlayerActions_Movement;
-        public InputAction @Punch => m_Wrapper.m_PlayerActions_Punch;
+        public InputAction @Shoot => m_Wrapper.m_PlayerActions_Shoot;
         public InputActionMap Get() { return m_Wrapper.m_PlayerActions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -225,9 +225,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Movement.started += instance.OnMovement;
             @Movement.performed += instance.OnMovement;
             @Movement.canceled += instance.OnMovement;
-            @Punch.started += instance.OnPunch;
-            @Punch.performed += instance.OnPunch;
-            @Punch.canceled += instance.OnPunch;
+            @Shoot.started += instance.OnShoot;
+            @Shoot.performed += instance.OnShoot;
+            @Shoot.canceled += instance.OnShoot;
         }
 
         private void UnregisterCallbacks(IPlayerActionsActions instance)
@@ -235,9 +235,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Movement.started -= instance.OnMovement;
             @Movement.performed -= instance.OnMovement;
             @Movement.canceled -= instance.OnMovement;
-            @Punch.started -= instance.OnPunch;
-            @Punch.performed -= instance.OnPunch;
-            @Punch.canceled -= instance.OnPunch;
+            @Shoot.started -= instance.OnShoot;
+            @Shoot.performed -= instance.OnShoot;
+            @Shoot.canceled -= instance.OnShoot;
         }
 
         public void RemoveCallbacks(IPlayerActionsActions instance)
@@ -258,6 +258,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     public interface IPlayerActionsActions
     {
         void OnMovement(InputAction.CallbackContext context);
-        void OnPunch(InputAction.CallbackContext context);
+        void OnShoot(InputAction.CallbackContext context);
     }
 }

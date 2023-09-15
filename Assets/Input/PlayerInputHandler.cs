@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
 {
     private PlayerInput inputActions;
-
-    public Vector3 MoveInput => inputActions.PlayerActions.Movement.ReadValue<Vector3>();
 
     private Player player;
     
@@ -21,10 +21,20 @@ public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
 
     public override void Spawned()
     {
-        Runner.AddCallbacks( this );
+        Runner.AddCallbacks(this);
         EnableInput();
+
+        inputActions.PlayerActions.Shoot.performed += HandleShoot;
     }
 
+    private void HandleShoot(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    {
+        isShooting = true;
+    }
+    private bool isShooting = false;
+    public event UnityAction OnShootPerformed;
+
+    PlayerNetworkInput playerNetworkInput = new();
     public void EnableInput()
     {
         inputActions.Enable();
@@ -45,9 +55,11 @@ public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        PlayerNetworkInput playerNetworkInput = new();
         playerNetworkInput.MoveInput = inputActions.PlayerActions.Movement.ReadValue<Vector3>();
+        playerNetworkInput.IsShooting = isShooting;
         input.Set(playerNetworkInput);
+
+        isShooting = false;
     }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
@@ -106,4 +118,7 @@ public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
 public struct PlayerNetworkInput : INetworkInput
 {
     public Vector3 MoveInput {get; set;}
+    
+    public bool IsShooting{get; set;}
 }
+
