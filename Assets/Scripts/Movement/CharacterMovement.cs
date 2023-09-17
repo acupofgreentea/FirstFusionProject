@@ -8,6 +8,8 @@ public class CharacterMovement : NetworkBehaviour
     protected CharacterBase CharacterBase {get; private set;}
     public float MoveSpeed => moveSpeed;
 
+    [Networked] protected bool CanMove {get; set;} = true;
+
     public CharacterMovement Init(CharacterBase characterBase)
     {
         CharacterBase = characterBase;

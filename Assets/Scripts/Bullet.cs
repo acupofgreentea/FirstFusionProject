@@ -62,6 +62,9 @@ public class Bullet : NetworkBehaviour
 
         if(hit.GameObject.TryGetComponent(out IDamagable damagable))
         {
+            if(hit.GameObject.GetInstanceID() == Owner.gameObject.GetInstanceID())
+                return false;
+
             if(CheckIfEnemyWillDie(damagable))
                 Owner.PlayerNetworkedData.AddToKillCount();
 

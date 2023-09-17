@@ -1,3 +1,4 @@
+using System;
 using Fusion;
 using UnityEngine;
 using UnityEngine.Events;
@@ -28,6 +29,9 @@ public class PlayerHealth : NetworkBehaviour, IDamagable
 
     public override void FixedUpdateNetwork()
     {
+        if(!Object.HasStateAuthority)
+            return;
+        
         if(IsAlive)
             return;
 
@@ -36,6 +40,8 @@ public class PlayerHealth : NetworkBehaviour, IDamagable
             Debug.LogError("expired");
             HandleInit();
             OnPlayerRespawn?.Invoke();
+            player.CharacterMovement.enabled = true;
+            player.PlayerShootController.enabled = true;
         }
     }
 

@@ -1,20 +1,42 @@
 using Fusion;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class PlayerMovement : CharacterMovement
 {
     protected new Player CharacterBase => base.CharacterBase as Player;
 
     [Networked] public Vector3 MovementInput {get; set;}
+
+    public override void Spawned()
+    {
+        CharacterBase.PlayerHealth.OnPlayerDie += DisableRpc;
+        CharacterBase.PlayerHealth.OnPlayerRespawn += EnableRpc;
+        SessionManager.OnSessionStart += EnableRpc;
+        SessionManager.OnSessionFinish += DisableRpc;
+    }
  
     public override void FixedUpdateNetwork() 
     {
         Move();
     }
+
+    [Rpc]
+    private void DisableRpc()
+    {
+        CanMove = false;
+    }
+
+    [Rpc]
+    private void EnableRpc()
+    {
+        CanMove = true;
+    }
     
     private void Move()
     {
+        if(!CanMove)
+            return;
+        
         if(GetInput(out PlayerNetworkInput playerNetworkInput))
         {
             MovementInput = playerNetworkInput.MoveInput.normalized;

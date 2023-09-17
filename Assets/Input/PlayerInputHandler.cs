@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
+public class PlayerInputHandler : MonoBehaviour, INetworkRunnerCallbacks
 {
-    private PlayerInput inputActions;
-
     private Player player;
     
     private bool isShooting = false;
@@ -16,42 +15,8 @@ public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
     
     public PlayerInputHandler Init(Player player)
     {
-        inputActions = new PlayerInput();
         this.player = player;
         return this;
-    }
-
-    public override void Spawned()
-    {
-        Runner.AddCallbacks(this);
-
-        inputActions.PlayerActions.Shoot.performed += HandleShoot;
-        player.PlayerHealth.OnPlayerDie += DisableInput;
-        player.PlayerHealth.OnPlayerRespawn += EnableInput;
-
-        EnableInput();
-    }
-
-    public override void Despawned(NetworkRunner runner, bool hasState)
-    {
-        inputActions.PlayerActions.Shoot.performed -= HandleShoot;
-        player.PlayerHealth.OnPlayerDie -= DisableInput;
-        player.PlayerHealth.OnPlayerRespawn -= EnableInput;
-    }
-
-    private void HandleShoot(UnityEngine.InputSystem.InputAction.CallbackContext context)
-    {
-        isShooting = true;
-    }
-
-    public void EnableInput()
-    {
-        inputActions.Enable();
-    }
-
-    public void DisableInput()
-    {
-        inputActions.Disable();
     }
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
@@ -61,14 +26,22 @@ public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
     }
+    private const string AXIS_HORIZONTAL = "Horizontal";
+    private const string AXIS_VERTICAL = "Vertical";
+    private const string BUTTON_FIRE1 = "Fire1";
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        playerNetworkInput.MoveInput = inputActions.PlayerActions.Movement.ReadValue<Vector3>();
-        playerNetworkInput.IsShooting = isShooting;
-        input.Set(playerNetworkInput);
+        PlayerNetworkInput localInput = new PlayerNetworkInput();
+        localInput.MoveInput = new Vector3(Input.GetAxisRaw(AXIS_HORIZONTAL), 0f, Input.GetAxisRaw(AXIS_VERTICAL));
+        localInput.buttons.Set(MyButtons.Attack, Input.GetButton(BUTTON_FIRE1));
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if(Physics.Raycast(ray, out RaycastHit target))
+        {
+            localInput.MousePosition = target.point;
+        }
 
-        isShooting = false;
+        input.Set(localInput);
     }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
@@ -128,7 +101,16 @@ public class PlayerInputHandler : NetworkBehaviour, INetworkRunnerCallbacks
 public struct PlayerNetworkInput : INetworkInput
 {
     public Vector3 MoveInput {get; set;}
+
+    public Vector3 MousePosition {get; set;}
     
     public bool IsShooting{get; set;}
+
+    public NetworkButtons buttons;
+}
+
+public enum MyButtons
+{
+    Attack = 0
 }
 

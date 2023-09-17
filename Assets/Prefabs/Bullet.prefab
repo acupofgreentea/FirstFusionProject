@@ -228,12 +228,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _interpolationDataSource: 0
-  moveSpeed: 30
+  moveSpeed: 60
   maxLifetime: 3
   layerMasks:
     serializedVersion: 2
     m_Bits: 4294967295
   damage: 3
+  _Owner: {fileID: 0}
 --- !u!1 &8007309068921936589
 GameObject:
   m_ObjectHideFlags: 0

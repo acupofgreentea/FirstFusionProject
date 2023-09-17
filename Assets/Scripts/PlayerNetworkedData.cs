@@ -25,7 +25,6 @@ public class PlayerNetworkedData : NetworkBehaviour
         if(!HasStateAuthority)
             return;
 
-        Debug.LogError("called");
         KillCount++;
     }
 

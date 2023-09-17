@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fusion;
@@ -13,6 +14,23 @@ public class ScoreBoardUI : MonoBehaviour
     {
         panel.SetActive(false);
     }
+
+    void Start()
+    {
+        SessionManager.OnSessionFinish += HandleSessionFinish;
+        SessionManager.OnSessionRestart += HandleSessionRestart;
+    }
+
+    private void HandleSessionRestart()
+    {
+        TogglePanel(false);
+    }
+
+    private void HandleSessionFinish()
+    {
+        TogglePanel(true);
+    }
+
     public void TogglePanel(bool enable)
     {
         panel.SetActive(enable);
@@ -44,6 +62,12 @@ public class ScoreBoardUI : MonoBehaviour
 
     void Update()
     {
+        if(SessionManager.Instance == null)
+            return;
+        
+        if(SessionManager.Instance.GameState == GameState.End)
+            return;
+
         if(Input.GetKeyDown(KeyCode.Tab))
         {
             TogglePanel(true);
@@ -53,5 +77,10 @@ public class ScoreBoardUI : MonoBehaviour
         {
             TogglePanel(false);
         }
+    }
+
+    void OnDestroy()
+    {
+        SessionManager.OnSessionFinish -= HandleSessionFinish;
     }
 }
