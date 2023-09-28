@@ -3,99 +3,67 @@ using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
 using UnityEngine;
-using UnityEngine.AI;
 
-public class PlayerInputHandler : MonoBehaviour, INetworkRunnerCallbacks
+public class PlayerInputHandler : SimulationBehaviour, ISpawned, IDespawned, IBeforeUpdate
 {
-    private Player player;
-    
-    private bool isShooting = false;
-
     PlayerNetworkInput playerNetworkInput = new();
+	private bool _resetCachedInput;
     
-    public PlayerInputHandler Init(Player player)
-    {
-        this.player = player;
-        return this;
-    }
+    void ISpawned.Spawned()
+		{
+			playerNetworkInput = default;
 
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
-    {
-    }
+			if (Runner.LocalPlayer == Object.InputAuthority)
+			{
+				var events = Runner.GetComponent<NetworkEvents>();
+                Debug.LogError("subs");
+				events.OnInput.RemoveListener(OnInput);
+				events.OnInput.AddListener(OnInput);
+			}
+		}
+ 
+		void IDespawned.Despawned(NetworkRunner runner, bool hasState)
+		{
+			var events = Runner.GetComponent<NetworkEvents>();
+			events.OnInput.RemoveListener(OnInput);
+		}
 
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
-    {
-    }
+		void IBeforeUpdate.BeforeUpdate()
+		{
+			if (Object == null || Object.HasInputAuthority == false)
+				return;
+
+			if (_resetCachedInput == true)
+			{
+				_resetCachedInput = false;
+				playerNetworkInput = default;
+			}
+
+			if (Runner.ProvideInput == false )
+				return;
+
+            playerNetworkInput.MoveInput = new Vector3(Input.GetAxisRaw(AXIS_HORIZONTAL), 0f, Input.GetAxisRaw(AXIS_VERTICAL));
+            if(Input.GetButtonDown(BUTTON_FIRE1))
+            {
+                playerNetworkInput.Fire = true;  
+            }
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if(Physics.Raycast(ray, out RaycastHit target))
+            {
+                playerNetworkInput.MousePosition = target.point;
+            }
+		}
+
     private const string AXIS_HORIZONTAL = "Horizontal";
     private const string AXIS_VERTICAL = "Vertical";
     private const string BUTTON_FIRE1 = "Fire1";
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        PlayerNetworkInput localInput = new PlayerNetworkInput();
-        localInput.MoveInput = new Vector3(Input.GetAxisRaw(AXIS_HORIZONTAL), 0f, Input.GetAxisRaw(AXIS_VERTICAL));
-        localInput.buttons.Set(MyButtons.Attack, Input.GetButton(BUTTON_FIRE1));
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if(Physics.Raycast(ray, out RaycastHit target))
-        {
-            localInput.MousePosition = target.point;
-        }
-
-        input.Set(localInput);
+        _resetCachedInput = true;
+        input.Set(playerNetworkInput);
     }
-
-    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
-    {
-    }
-
-    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
-    {
-    }
-
-    public void OnConnectedToServer(NetworkRunner runner)
-    {
-    }
-
-    public void OnDisconnectedFromServer(NetworkRunner runner)
-    {
-    }
-
-    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token)
-    {
-    }
-
-    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)
-    {
-    }
-
-    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message)
-    {
-    }
-
-    public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
-    {
-    }
-
-    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data)
-    {
-    }
-
-    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken)
-    {
-    }
-
-    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ArraySegment<byte> data)
-    {
-    }
-
-    public void OnSceneLoadDone(NetworkRunner runner)
-    {
-    }
-
-    public void OnSceneLoadStart(NetworkRunner runner)
-    {
-    }
-    
 }
 
 public struct PlayerNetworkInput : INetworkInput
@@ -107,6 +75,7 @@ public struct PlayerNetworkInput : INetworkInput
     public bool IsShooting{get; set;}
 
     public NetworkButtons buttons;
+    public bool Fire { get { return buttons.IsSet(MyButtons.Attack); } set { buttons.Set((int)MyButtons.Attack, value); } }
 }
 
 public enum MyButtons

@@ -10,10 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3097842877816443491}
   - component: {fileID: -6041988779086449754}
-  - component: {fileID: 1441653913122677880}
-  - component: {fileID: 8004581510989854258}
   - component: {fileID: 8677020191405770229}
-  - component: {fileID: -2660951098479591504}
+  - component: {fileID: 8857374735711498116}
+  - component: {fileID: 4876125348969472058}
   m_Layer: 0
   m_Name: NetworkRunnerPrefab
   m_TagString: Untagged
@@ -48,33 +47,6 @@ MonoBehaviour:
   m_Script: {fileID: -1199893898, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1441653913122677880
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2976844296030427379}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4853cec620272cf48bcb0c5ab0c62cac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _menuSceneName: 
---- !u!114 &8004581510989854258
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2976844296030427379}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcbbcfc4b8bb6574fb1a257c8ea830a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _poolableObjects:
-  - RawGuidValue: 6011ccc3a0b1b7243a5b249720469363
 --- !u!114 &8677020191405770229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -89,7 +61,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowHierarchyWindowOverlay: 1
   PostLoadDelayFrames: 1
---- !u!114 &-2660951098479591504
+--- !u!114 &8857374735711498116
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -98,7 +70,68 @@ MonoBehaviour:
   m_GameObject: {fileID: 2976844296030427379}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d99b5f9bd523e91468ea66da287ab26c, type: 3}
+  m_Script: {fileID: -232609262, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Runner: {fileID: 0}
+  OnInput:
+    m_PersistentCalls:
+      m_Calls: []
+  OnInputMissing:
+    m_PersistentCalls:
+      m_Calls: []
+  OnConnectedToServer:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDisconnectedFromServer:
+    m_PersistentCalls:
+      m_Calls: []
+  OnConnectRequest:
+    m_PersistentCalls:
+      m_Calls: []
+  OnConnectFailed:
+    m_PersistentCalls:
+      m_Calls: []
+  PlayerJoined:
+    m_PersistentCalls:
+      m_Calls: []
+  PlayerLeft:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSimulationMessage:
+    m_PersistentCalls:
+      m_Calls: []
+  OnShutdown:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSessionListUpdate:
+    m_PersistentCalls:
+      m_Calls: []
+  OnCustomAuthenticationResponse:
+    m_PersistentCalls:
+      m_Calls: []
+  OnHostMigration:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSceneLoadDone:
+    m_PersistentCalls:
+      m_Calls: []
+  OnSceneLoadStart:
+    m_PersistentCalls:
+      m_Calls: []
+  OnReliableData:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &4876125348969472058
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2976844296030427379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12ca84022256c6d448ed12d110e93472, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _poolableObjects:
+  - RawGuidValue: 6011ccc3a0b1b7243a5b249720469363

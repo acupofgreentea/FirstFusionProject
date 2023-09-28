@@ -29,6 +29,8 @@ public class Player : CharacterBase
         cam = Camera.main;
 
         cam.GetComponent<CameraController>().SetFollowObject(transform);
+
+        Debug.LogError("spawned");
     }
 
     public override void Despawned(NetworkRunner runner, bool hasState)

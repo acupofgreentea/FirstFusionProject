@@ -7,6 +7,8 @@ public class PlayerShootController : NetworkBehaviour
     private Player player;
 
     [Networked] private bool CanShoot {get; set;} = true;
+
+    [SerializeField] private Transform bulletSpawnPosition;
     public PlayerShootController Init(Player player)
     {
         this.player = player;
@@ -22,6 +24,8 @@ public class PlayerShootController : NetworkBehaviour
         player.PlayerHealth.OnPlayerRespawn += EnableShooting;
         SessionManager.OnSessionStart += EnableShooting;
         SessionManager.OnSessionFinish += DisableShooting;
+
+        networkTransform = GetComponent<NetworkTransform>();
     }
 
     private void EnableShooting()
@@ -44,6 +48,8 @@ public class PlayerShootController : NetworkBehaviour
 
     [Networked] public NetworkButtons ButtonsPrevious {get; set;}
 
+    private NetworkTransform networkTransform;
+
     public override void FixedUpdateNetwork()
     {
         if(!CanShoot)
@@ -51,26 +57,27 @@ public class PlayerShootController : NetworkBehaviour
 
         if(!GetInput(out PlayerNetworkInput playerNetworkInput))
             return;
-
-        if (playerNetworkInput.buttons.WasPressed(ButtonsPrevious, MyButtons.Attack))
-        {
-            HandleShootPerformed(playerNetworkInput);
-        }
+        if (playerNetworkInput.buttons.WasPressed(ButtonsPrevious, MyButtons.Attack) == true)
+		{
+			HandleShootPerformed(playerNetworkInput);
+		}
 
         ButtonsPrevious = playerNetworkInput.buttons;
     }
  
     private void HandleShootPerformed(PlayerNetworkInput playerNetworkInput)
     {
+        var key = new NetworkObjectPredictionKey {Byte0 = (byte) Object.InputAuthority.RawEncoded, Byte1 = (byte) Runner.Simulation.Tick};
+
         Vector3 targetPosition = playerNetworkInput.MousePosition;
-        Vector3 spawnPosition = transform.position;
-        Vector3 direction = targetPosition - spawnPosition;
+        Vector3 direction = targetPosition - transform.position;
         direction.y = 0f;
         direction = direction.normalized;
         Quaternion rotation = Quaternion.LookRotation(direction);
 
-        spawnPosition.y += 2f;
-
-        Runner.Spawn(bulletPrefab, spawnPosition, rotation, Object.InputAuthority);
+        Runner.Spawn(bulletPrefab, networkTransform.InterpolationTarget.position, rotation, Object.InputAuthority,(runner, obj) =>
+			{
+				obj.GetComponent<Bullet>().Owner = player;
+			}, key );
     }   
 }

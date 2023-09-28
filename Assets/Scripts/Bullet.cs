@@ -1,27 +1,39 @@
 using Fusion;
 using UnityEngine;
 
-public class Bullet : NetworkBehaviour
+public class Bullet : NetworkBehaviour, IPredictedSpawnBehaviour
 {
     [SerializeField] private float moveSpeed = 15f;
     [SerializeField] private float maxLifetime = 3.0f;
-    [Networked] private TickTimer currentLifetime {get; set;}
     [SerializeField] private LayerMask layerMasks; 
 
     [SerializeField] private int damage = 3;
 
-    [Networked] public Player Owner {get; set;}
+    public Player Owner {get; set;}
+
+    private Vector3 _interpolateFrom;
+	private Vector3 _interpolateTo;
+    private NetworkTransform _nt;
+
+    [Networked]
+	public TickTimer networkedLifeTimer { get; set; }		
+    private TickTimer _predictedLifeTimer;
+	private TickTimer lifeTimer
+	{
+		get => Object.IsPredictedSpawn ? _predictedLifeTimer : networkedLifeTimer;
+		set { if (Object.IsPredictedSpawn) _predictedLifeTimer = value;else networkedLifeTimer = value; }
+	}
 
     public override void Spawned()
     {
-        if(Runner.TryGetPlayerObject(Object.InputAuthority, out var player))
+        if(Runner.TryGetPlayerObject(Object.InputAuthority, out var networkObject))
         {
-            Owner = player.GetComponent<Player>();
+            Owner = networkObject.GetComponent<Player>();
         }
         if (Object.HasStateAuthority == false) 
             return;
 
-        currentLifetime = TickTimer.CreateFromSeconds(Runner, maxLifetime);
+        lifeTimer = TickTimer.CreateFromSeconds(Runner, maxLifetime);
     }
 
     public void SetOwner(Player player)
@@ -46,7 +58,7 @@ public class Bullet : NetworkBehaviour
 
     private void CheckLifetime()
     {
-        if (!currentLifetime.Expired(Runner)) 
+        if (!lifeTimer.Expired(Runner)) 
             return;
 
         Runner.Despawn(Object);
@@ -78,5 +90,37 @@ public class Bullet : NetworkBehaviour
     {
         int health = damagable.CurrentHealth;
         return health - damage <= 0;
+    }
+
+    public void PredictedSpawnSpawned()
+    {
+        _nt = GetComponent<NetworkTransform>();
+		_interpolateTo = transform.position;
+		_interpolateFrom = _interpolateTo;
+	    _nt.InterpolationTarget.position = _interpolateTo;
+		Spawned();
+    }
+
+    public void PredictedSpawnUpdate()
+    {
+        _interpolateFrom = _interpolateTo;
+		_interpolateTo = transform.position;
+		FixedUpdateNetwork();
+    }
+
+    public void PredictedSpawnRender()
+    {
+        var a = Runner.Simulation.StateAlpha;
+		_nt.InterpolationTarget.position = Vector3.Lerp(_interpolateFrom, _interpolateTo, a);
+    }
+
+    public void PredictedSpawnFailed()
+    {
+        Debug.LogWarning($"Predicted Spawn Failed Object={Object.Id}, instance={gameObject.GetInstanceID()}, resim={Runner.IsResimulation}");
+		Runner.Despawn(Object, true);
+    }
+
+    public void PredictedSpawnSuccess()
+    {
     }
 }
