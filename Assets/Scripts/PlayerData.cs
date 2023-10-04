@@ -2,8 +2,6 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-    // This class functions as an Instance Singleton (no-static references)
-    // and holds information about the local player in-between scene loads.
     public class PlayerData : MonoBehaviour
     {
         private string _nickName = null;

@@ -7,12 +7,20 @@ public class PlayerHealth : NetworkBehaviour, IDamagable
 {
     [SerializeField] private int maxHealth = 15;
 
-    [Networked] public int CurrentHealth {get; set;}
+    [Networked(OnChanged = nameof(OnHealthChanged))] public int CurrentHealth {get; set;}
+
+    private static void OnHealthChanged(Changed<PlayerHealth> changed)
+    {
+        changed.Behaviour.OnDamageReceived?.Invoke(changed.Behaviour.CurrentHealth);
+    }
+
     [Networked] public TickTimer RespawnTimer {get; set;}
     [Networked] public bool IsAlive {get; set;}
 
     public event UnityAction OnPlayerDie;
     public event UnityAction OnPlayerRespawn;
+
+    public UnityAction<int> OnDamageReceived;
 
     private Player player;
 
@@ -51,6 +59,7 @@ public class PlayerHealth : NetworkBehaviour, IDamagable
             return;
         
         CurrentHealth -= damage;
+
 
         if(CurrentHealth <= 0)
         {

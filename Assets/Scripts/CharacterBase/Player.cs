@@ -1,5 +1,6 @@
 using UnityEngine;
 using Fusion;
+
 public class Player : CharacterBase
 {
     public new PlayerMovement CharacterMovement => base.CharacterMovement as PlayerMovement;
@@ -9,6 +10,9 @@ public class Player : CharacterBase
     public PlayerNetworkedData PlayerNetworkedData {get; private set;}
 
     [SerializeField] private GameObject rendererRoot;
+
+
+    public static Player Local {get; private set;}
     protected override void Awake() 
     {
         base.Awake();
@@ -27,6 +31,8 @@ public class Player : CharacterBase
             return;
 
         cam = Camera.main;
+
+        Local = this;
 
         cam.GetComponent<CameraController>().SetFollowObject(transform);
 
